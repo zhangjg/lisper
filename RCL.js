@@ -134,21 +134,13 @@ environment.cdr=function()
 //(lamda (a1,a3)())
 environment.lambda=function(lambda,param,body)
 {
-    console.log('arguments:%j',arguments);
-    var env={};
-    for(var i=0;param.length;++i)
-    {
-        env[param[i]]=null;
-    }
-    var ret=[];
-    ret.concat(ret);
-    ret.env=env;
+    var ret=body.concat()
+    ret.param=param;
     return ret;
 };
 
 environment.cons=function()
 {
-    //check(arguments)
     console.log("arugments:%j",arguments);
     if(arguments.length != 3)
     {
@@ -166,6 +158,7 @@ environment.cons=function()
 
 function value(l,env)
 {
+    //console.trace(l);
     env = env|| environment;
     if(env !== environment)
     {
@@ -179,10 +172,12 @@ function value(l,env)
         {
             return env.quote.apply(env,l);
         }
+        
         if(l[0] == 'lambda')
         {
             return env.lambda.apply(env,l);
         }
+        
         l.forEach(function (item,index,array)
         {
             if(index != 0)
@@ -195,6 +190,35 @@ function value(l,env)
                 }
             }
         });
+        
+        if(l[0] instanceof Array)
+        {
+            var ls=l[0];
+            if(ls[0]== 'lambda')
+            {
+                l[0]=env[ls[0]].apply(env,ls);
+            }
+        }
+        if(l[0].param != null)
+        {
+            //l[0] is lambda 
+            var lambda = l[0];
+            var arg=lambda.param.concat();
+            var o={};
+            arg.forEach(function(item,index)
+            {
+                o[item]=l[index+1];
+            });
+            lambda=lambda.concat();
+            lambda.forEach(function(item,index,array)
+            {
+                if(item in o)
+                {
+                    array[index]=o[item];
+                }
+            } );
+            return env[lambda[0]].apply(env,lambda);
+        }
         
         if(l[0] in env)
         {
