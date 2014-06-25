@@ -21,7 +21,6 @@ environment['+']=function()
 
 environment['-']=function()
 {
-    //check(arguments);
     var ret=arguments[1];
     for(var i=2;i<arguments.length;++i)
     {
@@ -33,7 +32,6 @@ environment['-']=function()
 
 environment['*']=function()
 {
-    //check(arguments);
     var ret=arguments[1];
     for(var i=2;i<arguments.length;++i)
     {
@@ -91,7 +89,6 @@ environment.autom=function()
 
 environment.eq=function()
 {
-    //check(arguments);
     if(arguments.length != 3)
     {
         throw new Error("bad synty");
@@ -131,13 +128,28 @@ environment.cdr=function()
     throw new Error("bad synty");
 };
 
-//(lamda (a1,a3)())
 environment.lambda=function(lambda,param,body)
 {
     var ret=body.concat()
     ret.param=param;
     return ret;
 };
+
+environment.lambdacall=function(lambda_arg)
+{
+    var lambda=environment.car(lambda_arg);
+    var arg=environment.cdr(lambda_arg);//list
+    var param=lambda_arg.param.concat();//list
+    var argus={};
+    for(var i=0;i<arg.length;++i)
+    {
+        var key=param[i];
+        if(key == null){
+            key=i;
+        }
+        argus[key]=arg[i];
+    }
+}
 
 environment.cons=function()
 {
